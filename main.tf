@@ -1,7 +1,12 @@
 provider "aws" {
- region = "us-east-1" 
+  region = "us-east-1"
 }
 
 resource "aws_s3_bucket" "demo" {
-  bucket = "ci5-pr-demo-bucket-12345"
+  bucket = var.bucket_name
+  tags = {
+    Environment = var.environment
+    Owner       = var.owner
+  }
 }
+# change
