@@ -1,4 +1,4 @@
-name: PR Terraform Plan
+name: PR Terraform Plan (PR-safe)
 
 on:
   pull_request:
@@ -8,6 +8,7 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout code
@@ -18,9 +19,17 @@ jobs:
         with:
           terraform_version: 1.7.0
 
-      - name: Terraform Init
-        run: terraform init
+      - name: Terraform Init (backend disabled)
+        run: terraform init -backend=false
 
-      - name: Terraform Plan
-        run: terraform plan
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan (no refresh)
+        env:
+          TF_IN_AUTOMATION: "true"
+        run: terraform plan -refresh=false -no-color
 
